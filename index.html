@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Générateur d'étiquettes</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<div id="login-screen" class="screen">
+  <form class="login-card" id="login-form">
+    <h1>Générateur d'étiquettes</h1>
+    <p class="sub">Connexion requise</p>
+
+    <div class="field">
+      <label for="login-email">Email</label>
+      <input id="login-email" type="email" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label for="login-password">Mot de passe</label>
+      <input id="login-password" type="password" autocomplete="current-password" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="login-btn">Se connecter</button>
+    <div class="error-msg" id="login-error"></div>
+
+    <p class="hint" id="config-hint" hidden>
+      ⚠️ Supabase n'est pas encore configuré. Ouvre <code>config.js</code> et renseigne l'URL
+      et la clé "anon" de ton projet (voir README.md).
+    </p>
+  </form>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="app" class="screen app" hidden>
+  <div style="width:100%;">
+    <div class="topbar">
+      <div class="brand">Générateur d'étiquettes <span>CH</span></div>
+      <div class="who">
+        <span id="who-email"></span>
+        <button class="btn btn-ghost btn-small" id="logout-btn">Se déconnecter</button>
+      </div>
+    </div>
+
+    <div class="layout">
+
+      <!-- LEFT: form -->
+      <div>
+        <div class="panel">
+          <div class="panel-header">
+            <h2 style="margin:0;">Expéditeur</h2>
+            <button type="button" class="btn-add" id="add-sender-toggle">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 1V13M1 7H13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              Ajouter
+            </button>
+          </div>
+
+          <div class="custom-select" id="sender-custom-select">
+            <button type="button" class="custom-select-btn" id="sender-select-btn">
+              <span id="sender-select-label">Aucun expéditeur enregistré</span>
+              <svg class="chevron" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5.5 5.5L10 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="custom-select-panel" id="sender-select-panel" hidden></div>
+          </div>
+
+          <div class="add-sender-form" id="add-sender-form" hidden>
+            <div class="field">
+              <label for="new-sender-name">Nom</label>
+              <input id="new-sender-name" type="text" placeholder="Jean Dupont">
+            </div>
+            <div class="field">
+              <label for="new-sender-address">Adresse</label>
+              <input id="new-sender-address" type="text" placeholder="Rue du Lac 12">
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label for="new-sender-npa">NPA</label>
+                <input id="new-sender-npa" type="text" placeholder="1800">
+              </div>
+              <div class="field">
+                <label for="new-sender-city">Ville</label>
+                <input id="new-sender-city" type="text" placeholder="Vevey">
+              </div>
+            </div>
+            <div class="field">
+              <label for="new-sender-phone">Téléphone (optionnel)</label>
+              <input id="new-sender-phone" type="text" placeholder="+41 79 123 45 67">
+            </div>
+            <div class="field">
+              <label for="new-sender-website">Site web (optionnel)</label>
+              <input id="new-sender-website" type="text" placeholder="www.exemple.ch">
+            </div>
+            <button type="button" class="btn btn-ghost btn-small" id="add-sender-btn">Enregistrer cet expéditeur</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Code DigitalStamp</h2>
+          <div class="code-fields">
+            <input id="code-1" maxlength="4" placeholder="A407">
+            <input id="code-2" maxlength="4" placeholder="2062">
+            <input id="code-3" maxlength="4" placeholder="3451">
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Destinataire</h2>
+          <div class="field">
+            <label for="rcpt-name">Nom</label>
+            <input id="rcpt-name" type="text" placeholder="Alexandra Weber">
+          </div>
+          <div class="field">
+            <label for="rcpt-address">Adresse</label>
+            <input id="rcpt-address" type="text" placeholder="Bahnhofstrasse 5">
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="rcpt-npa">NPA</label>
+              <input id="rcpt-npa" type="text" placeholder="8001">
+            </div>
+            <div class="field">
+              <label for="rcpt-city">Ville</label>
+              <input id="rcpt-city" type="text" placeholder="Zürich">
+            </div>
+          </div>
+          <div class="field">
+            <label for="rcpt-country">Pays</label>
+            <input id="rcpt-country" type="text" value="Suisse">
+          </div>
+
+          <div class="privacy-note">
+            🔒 L'adresse du destinataire n'est jamais enregistrée nulle part — elle reste
+            uniquement dans ce formulaire, le temps de générer et imprimer l'étiquette.
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Format</h2>
+          <div class="format-row" id="format-row">
+            <button type="button" class="format-chip active" data-format="10x15">10 × 15 cm</button>
+            <button type="button" class="format-chip" data-format="a6">A6 (105 × 148 mm)</button>
+            <button type="button" class="format-chip" data-format="c4">Enveloppe C4 (324 × 229 mm)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: preview -->
+      <div class="preview-wrap">
+        <div class="preview-stage">
+          <div class="label" id="label-preview"></div>
+        </div>
+        <div class="preview-actions">
+          <button type="button" class="btn btn-primary" id="print-btn">Imprimer / Enregistrer en PDF</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="app-footer">Usage local — aucune donnée destinataire n'est stockée en base.</div>
+  </div>
+</div>
+
+<!-- Hidden element used only at print time -->
+<div id="print-area"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
