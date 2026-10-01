@@ -91,19 +91,14 @@ l'adresse affichée par `npx serve` (ex: `http://192.168.1.x:3000`).
    "Enregistrer en PDF" comme imprimante si besoin), la taille de page est déjà réglée
    sur le format choisi.
 
-## 5. Publier sur GitHub Pages (optionnel)
+## 5. Publier sur GitHub Pages
 
-```bash
-git init
-git add .
-git commit -m "Générateur d'étiquettes"
-git branch -M main
-git remote add origin https://github.com/TON-COMPTE/etiquette-generator.git
-git push -u origin main
-```
+Le dépôt est sur [github.com/elodiePe/GenerateurEtiquette](https://github.com/elodiePe/GenerateurEtiquette).
 
-Puis dans les réglages du dépôt GitHub : **Settings → Pages → Source → branche `main`**.
-Le site sera accessible à `https://TON-COMPTE.github.io/etiquette-generator/`.
+Pour activer GitHub Pages : **Settings → Pages → Build and deployment → Source: "Deploy from a branch"
+→ Branch: `main` / `/ (root)` → Save**.
+
+Le site sera accessible à `https://elodiepe.github.io/GenerateurEtiquette/`.
 
 ⚠️ `config.js` contenant l'URL et la clé "anon" sera visible publiquement — c'est normal
 et sans danger tant que les policies RLS de l'étape 1 sont en place.
