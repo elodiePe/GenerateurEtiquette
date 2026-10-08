@@ -445,11 +445,19 @@ button {
 
 /* ---------- Print ---------- */
 @media print {
-  body * { visibility: hidden; }
-  #print-area, #print-area * { visibility: visible; }
-  #print-area {
-    position: fixed;
-    top: 0; left: 0;
+  /* Remove everything but the label from the flow (visibility:hidden would keep
+     the app's layout height and spill onto extra pages). */
+  body > *:not(#print-area) { display: none !important; }
+  html, body {
+    min-height: 0 !important;
+    height: auto !important;
+    background: #fff !important;
+  }
+  #print-area { display: block; }
+  #print-area .label {
     box-shadow: none !important;
+    overflow: hidden;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 }
