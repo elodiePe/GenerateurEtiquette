@@ -1,0 +1,24 @@
+# Interroge Supabase une fois par jour pour éviter que le projet (offre gratuite)
+# soit mis en pause après 7 jours d'inactivité.
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: "17 6 * * *" # tous les jours à 06:17 UTC
+  workflow_dispatch: # permet aussi un lancement manuel depuis l'onglet Actions
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Requête sur la table senders
+        run: |
+          URL=$(sed -n 's/.*url: *"\([^"]*\)".*/\1/p' config.js)
+          KEY=$(sed -n 's/.*anonKey: *"\([^"]*\)".*/\1/p' config.js)
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            "$URL/rest/v1/senders?select=id&limit=1" \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY")
+          echo "Réponse Supabase : $STATUS"
+          test "$STATUS" = "200"
